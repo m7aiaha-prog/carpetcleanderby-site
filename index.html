@@ -67,7 +67,7 @@
     padding:16px 28px;max-width:1140px;margin:0 auto;
   }
   .logo{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-weight:680;font-size:20px;text-decoration:none;color:var(--text);}
-  .logo svg{width:30px;height:30px;flex-shrink:0;}
+  .logo-img{width:36px;height:36px;object-fit:cover;border-radius:50%;flex-shrink:0;border:1px solid var(--line);}
   .logo span{font-size:11px;font-family:'JetBrains Mono',monospace;display:block;color:var(--text-dim);letter-spacing:.1em;font-weight:500;margin-top:2px;}
   nav.links{display:flex;gap:32px;font-size:14px;}
   nav.links a{text-decoration:none;color:var(--text-dim);transition:color .2s;}
@@ -111,26 +111,22 @@
   }
   .btn-ghost:hover{border-color:var(--gold);color:var(--gold-soft);}
 
-  /* dial signature */
-  .dial-wrap{display:flex;justify-content:center;}
-  .dial{width:100%;max-width:340px;}
-  .dial-needle{transform-origin:170px 170px;animation:sweep 6s ease-in-out infinite;}
-  @keyframes sweep{
-    0%{transform:rotate(-58deg);}
-    45%{transform:rotate(58deg);}
-    55%{transform:rotate(58deg);}
-    100%{transform:rotate(-58deg);}
+  /* trust chips */
+  .trust-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px;}
+  .trust-chip{
+    display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-dim);
+    border:1px solid var(--line);padding:8px 14px;border-radius:20px;background:var(--surface);
   }
-  .steam{animation:rise 4s ease-in-out infinite;opacity:0;}
-  .steam.s2{animation-delay:1.1s;}
-  .steam.s3{animation-delay:2.2s;}
-  @keyframes rise{
-    0%{opacity:0;transform:translateY(0);}
-    20%{opacity:.55;}
-    100%{opacity:0;transform:translateY(-22px);}
-  }
-  @media (prefers-reduced-motion:reduce){
-    .dial-needle,.steam{animation:none !important;}
+  .trust-chip svg{width:15px;height:15px;stroke:var(--gold);flex-shrink:0;}
+
+  /* hero photo */
+  .hero-photo{position:relative;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);}
+  .hero-photo img{width:100%;height:100%;object-fit:cover;aspect-ratio:4/5;}
+  .hero-photo-tag{
+    position:absolute;left:16px;right:16px;bottom:16px;
+    background:rgba(28,23,18,0.82);backdrop-filter:blur(4px);
+    border:1px solid var(--line);padding:12px 16px;border-radius:var(--radius);
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold-soft);letter-spacing:.02em;
   }
 
   section{padding:80px 0;}
@@ -156,6 +152,12 @@
   .why-item{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line);}
   .why-item svg{width:18px;height:18px;stroke:var(--gold);flex-shrink:0;margin-top:3px;}
   .why-item span{font-size:15px;}
+
+  /* gallery */
+  .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .gallery-item{margin:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface);}
+  .gallery-item img{width:100%;height:auto;display:block;aspect-ratio:1/1;object-fit:cover;}
+  .gallery-item figcaption{padding:12px 14px;font-size:13px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;}
 
   /* testimonials */
   .testi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
@@ -204,11 +206,14 @@
     .dial-wrap{order:-1;max-width:240px;margin:0 auto 12px;}
     .services-grid{grid-template-columns:1fr;}
     .why-grid{grid-template-columns:1fr;}
+    .gallery-grid{grid-template-columns:1fr 1fr;}
+    .hero-photo img{aspect-ratio:16/10;}
     .testi-grid{grid-template-columns:1fr 1fr;}
     .contact-grid{grid-template-columns:1fr;}
     .foot-grid{grid-template-columns:1fr;}
   }
   @media (max-width:520px){
+    .gallery-grid{grid-template-columns:1fr;}
     .testi-grid{grid-template-columns:1fr;}
     .cta-row{flex-direction:column;}
     .btn-primary,.btn-ghost{text-align:center;}
@@ -220,7 +225,7 @@
 <header>
   <div class="nav">
     <a href="#" class="logo">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 11 L16 4 L28 11 L16 18 Z"/><path d="M9 14 L9 24 L16 28 L23 24 L23 14"/><path d="M16 18 L16 28"/></svg>
+      <img src="images/logo.jpg" alt="Carpet Clean Derby logo" class="logo-img">
       <span>Carpet Clean<span>DERBY &middot; EST. LOCAL SERVICE</span></span>
     </a>
     <nav class="links">
@@ -237,35 +242,31 @@
   <div class="wrap hero-grid">
     <div>
       <div class="eyebrow">Derby &middot; Family Owned &middot; 24/7</div>
-      <h1>Dry carpets <em>within 2 hours</em>, not two days.</h1>
+      <h1>Carpets, sofas &amp; upholstery <em>&mdash; I've got you covered.</em></h1>
       <p class="lede">Looking for professional carpet cleaners in Derby? At Carpet Clean we have over 5 years of experience transforming carpets and upholstery, promising an exceptional service you don't want to miss.</p>
       <div class="cta-row">
         <a class="btn-primary" href="tel:07939830634">Call for a quote</a>
         <a class="btn-ghost" href="#contact">Get in touch</a>
       </div>
       <div class="badges">
-        <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12l4 4L19 6"/></svg>Affordable prices</div>
-        <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12l4 4L19 6"/></svg>High quality</div>
         <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12l4 4L19 6"/></svg>Family owned</div>
+        <div class="badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12l4 4L19 6"/></svg>No deposit required</div>
+      </div>
+      <div class="trust-row">
+        <div class="trust-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 2 3 6v6c0 5 4 9 9 10 5-1 9-5 9-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
+          Trusted Trader &mdash; Derbyshire County Council
+        </div>
+        <div class="trust-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 2 3 6v6c0 5 4 9 9 10 5-1 9-5 9-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
+          Checkatrade Approved Member
+        </div>
       </div>
     </div>
 
-    <div class="dial-wrap">
-      <svg class="dial" viewBox="0 0 340 260">
-        <circle cx="170" cy="170" r="118" fill="none" stroke="var(--line)" stroke-width="2"/>
-        <path d="M 70 170 A 100 100 0 0 1 270 170" fill="none" stroke="var(--teal)" stroke-width="6" stroke-linecap="round" opacity="0.55"/>
-        <path d="M 70 170 A 100 100 0 0 1 170 70" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round"/>
-        <text x="60" y="196" fill="var(--text-dim)" font-family="JetBrains Mono, monospace" font-size="11">WET</text>
-        <text x="252" y="196" fill="var(--text-dim)" font-family="JetBrains Mono, monospace" font-size="11">DRY</text>
-        <line class="dial-needle" x1="170" y1="170" x2="170" y2="80" stroke="var(--gold-soft)" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="170" cy="170" r="7" fill="var(--gold-soft)"/>
-        <g stroke="var(--text-dim)" stroke-width="2" stroke-linecap="round" fill="none">
-          <path class="steam" d="M150 96 q4 -8 0 -16" />
-          <path class="steam s2" d="M170 90 q4 -8 0 -16" />
-          <path class="steam s3" d="M190 96 q4 -8 0 -16" />
-        </g>
-        <text x="170" y="230" fill="var(--text)" font-family="Fraunces, serif" font-size="20" text-anchor="middle" font-weight="600">2 HR DRY TIME</text>
-      </svg>
+    <div class="hero-photo">
+      <img src="images/gallery-office.jpg" alt="Carpet Clean Derby carrying out a large commercial carpet clean" loading="eager">
+      <div class="hero-photo-tag">Safe, non-toxic &amp; pet-friendly &middot; fast drying times</div>
     </div>
   </div>
 </section>
@@ -293,7 +294,7 @@
           <path d="M12 50 l-2 6 M52 50 l2 6"/>
         </svg>
         <h3>Upholstery Cleaning</h3>
-        <p>We offer upholstery cleans to those in Derby, using an impressive vacuum method to remove stains and dirt from your everyday furniture.</p>
+        <p>Sofas, chairs and mattresses &mdash; we've got you covered, using a safe, non-toxic and pet-friendly clean with no deposit required to book.</p>
         <a href="tel:07939830634">Book this service &rarr;</a>
       </div>
     </div>
@@ -312,7 +313,31 @@
       <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12l4 4L19 6"/></svg><span>Non-toxic and pet-friendly solution</span></div>
       <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12l4 4L19 6"/></svg><span>No risk cleaning</span></div>
       <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12l4 4L19 6"/></svg><span>No disruption cleaning</span></div>
-      <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12l4 4L19 6"/></svg><span>Dry in 2 hours</span></div>
+      <div class="why-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12l4 4L19 6"/></svg><span>Fast drying times</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Recent work</div>
+      <h2>Before &amp; after</h2>
+      <p>A few real jobs from around Derby &mdash; carpets, stairs and upholstery, done properly.</p>
+    </div>
+    <div class="gallery-grid">
+      <figure class="gallery-item">
+        <img src="images/gallery-bedroom.jpg" alt="Bedroom carpet before and after stain removal" loading="lazy">
+        <figcaption>Bedroom carpet &mdash; stain removal</figcaption>
+      </figure>
+      <figure class="gallery-item">
+        <img src="images/gallery-sofa.jpg" alt="Fabric corner sofa before and after upholstery clean" loading="lazy">
+        <figcaption>Corner sofa &mdash; upholstery clean</figcaption>
+      </figure>
+      <figure class="gallery-item">
+        <img src="images/gallery-hallway.jpg" alt="Hallway carpet before and after deep clean" loading="lazy">
+        <figcaption>Hallway carpet &mdash; deep clean</figcaption>
+      </figure>
     </div>
   </div>
 </section>
