@@ -24,6 +24,8 @@
     --line:rgba(47,49,51,0.12);
     --radius:6px;
     --slide:100px;
+    --star-on:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpolygon fill='%23917962' points='10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7'/%3E%3C/svg%3E");
+    --star-off:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpolygon fill='%23d9d3ca' points='10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7'/%3E%3C/svg%3E");
   }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
@@ -126,12 +128,39 @@
 
   /* reviews */
   .reviews{background:var(--cream);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
-  .testi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
-  .testi-card{background:var(--white);border:1px solid var(--line);padding:26px 22px;border-radius:var(--radius);display:flex;flex-direction:column;gap:14px;}
-  .stars{display:flex;gap:3px;}
-  .stars svg{width:16px;height:16px;fill:var(--taupe);}
-  .testi-card p{font-size:15px;color:var(--muted);flex-grow:1;margin:0;}
-  .testi-name{font-size:14px;font-weight:700;color:var(--ink);}
+  .reviews-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:36px;}
+  .reviews-head .section-head{margin-bottom:0;}
+  .rv-nav{display:flex;gap:10px;flex-shrink:0;}
+  .rv-btn{
+    width:46px;height:46px;border-radius:50%;border:0;background:var(--sage);color:var(--ink);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s,opacity .2s;
+  }
+  .rv-btn svg{width:22px;height:22px;}
+  .rv-btn:hover:not(:disabled){background:var(--sage-hover);}
+  .rv-btn:disabled{opacity:.35;cursor:default;}
+  .rv-btn:focus-visible,.rv-scroller:focus-visible,.rv-more:focus-visible{outline:3px solid var(--sage-deep);outline-offset:3px;}
+  .rv-scroller{
+    display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;
+    padding:4px 4px 22px;margin:0 -4px;scrollbar-width:thin;scrollbar-color:var(--sage) transparent;
+  }
+  .review-card{
+    flex:0 0 clamp(268px,80vw,330px);scroll-snap-align:start;background:var(--white);
+    border:1px solid var(--line);border-radius:var(--radius);padding:24px 22px;
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .rv-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .stars{position:relative;display:inline-block;width:90px;height:16px;background:var(--star-off) 0 0/18px 16px repeat-x;}
+  .stars::before{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--p,100%);background:var(--star-on) 0 0/18px 16px repeat-x;}
+  .rv-score{font-size:13px;font-weight:700;color:var(--muted);}
+  .rv-title{font-size:18px;line-height:1.3;margin:0;}
+  .rv-text{font-size:15px;color:var(--muted);margin:0;}
+  .js .rv-text{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:7;line-clamp:7;overflow:hidden;}
+  .js .review-card.open .rv-text{display:block;overflow:visible;-webkit-line-clamp:unset;line-clamp:unset;}
+  .rv-more{align-self:flex-start;background:none;border:0;padding:0;font:inherit;font-size:14px;font-weight:700;color:var(--sage-deep);cursor:pointer;}
+  .rv-more:hover{text-decoration:underline;}
+  .rv-meta{margin-top:auto;padding-top:6px;display:flex;flex-direction:column;gap:2px;}
+  .rv-name{font-size:14px;font-weight:700;color:var(--ink);}
+  .rv-sub{font-size:13px;color:var(--muted);}
 
   /* contact */
   .contact-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:56px;align-items:start;}
@@ -182,8 +211,9 @@
     .hero-grid{grid-template-columns:1fr;gap:40px;}
     .hero-photo img{aspect-ratio:16/10;}
     .services-grid,.why-grid,.contact-grid,.foot-grid{grid-template-columns:1fr;}
-    .gallery-grid,.testi-grid{grid-template-columns:1fr 1fr;}
+    .gallery-grid{grid-template-columns:1fr 1fr;}
     .contact-grid{gap:36px;}
+    .reviews-head{align-items:flex-start;}
   }
   @media (max-width:520px){
     .nav{padding:12px 18px;}
@@ -192,10 +222,11 @@
     .call-btn{padding:10px 16px;}
     .call-btn .full{display:none;}
     .call-btn .short{display:inline;}
-    .gallery-grid,.testi-grid{grid-template-columns:1fr;}
+    .gallery-grid{grid-template-columns:1fr;}
     .cta-row{flex-direction:column;}
     .btn-primary,.btn-ghost{text-align:center;}
     .service-card{padding:28px 24px;}
+    .reviews-head{flex-direction:column;gap:18px;}
   }
 </style>
 </head>
@@ -323,55 +354,220 @@
 
 <section class="reviews" id="reviews">
   <div class="wrap">
-    <div class="section-head" data-slide="left">
-      <div class="eyebrow">Reviews</div>
-      <h2>What Derby says</h2>
+    <div class="reviews-head">
+      <div class="section-head" data-slide="left">
+        <div class="eyebrow">Reviews</div>
+        <h2>What our customers say</h2>
+      </div>
+      <div class="rv-nav" aria-label="Scroll reviews">
+        <button class="rv-btn" id="rvPrev" type="button" aria-label="Previous reviews"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button class="rv-btn" id="rvNext" type="button" aria-label="Next reviews"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
     </div>
-    <div class="testi-grid">
-      <div class="testi-card" data-slide="left" style="--d:0s">
-        <div class="stars">
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-        </div>
-        <p>"Brilliant service, carpets are like new. I was so shocked how well they came up. Will definitely use these again."</p>
-        <div class="testi-name">&mdash; Matt B</div>
-      </div>
-      <div class="testi-card" data-slide="up" style="--d:0.08s">
-        <div class="stars">
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-        </div>
-        <p>"Used Carpet Clean this morning. Very professional and left the downstairs carpets very clean and surprisingly dry. Furniture put back in place &mdash; will definitely have me as a repeat customer."</p>
-        <div class="testi-name">&mdash; Bill B</div>
-      </div>
-      <div class="testi-card" data-slide="up" style="--d:0.16s">
-        <div class="stars">
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-        </div>
-        <p>"Had ours done today. Living room and stairs carpets. Both now look brand new. Excellent service."</p>
-        <div class="testi-name">&mdash; Sharpey</div>
-      </div>
-      <div class="testi-card" data-slide="right" style="--d:0.24s">
-        <div class="stars">
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-          <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.5 14,11.8 15.6,18 10,14.5 4.4,18 6,11.8 1,7.5 7.4,7"/></svg>
-        </div>
-        <p>"Great service and very professional! Definitely recommend and will be booking in the future."</p>
-        <div class="testi-name">&mdash; Liam M</div>
-      </div>
+    <div class="rv-scroller" id="rvScroller" tabindex="0" role="region" aria-label="Customer reviews. Scroll sideways to read more." data-slide="up">
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Fantastic job very pleased!</h3>
+        <p class="rv-text">&ldquo;Would not have anybody else clean my carpets. Jamie turned up at the time he said he would and nothing was too much trouble for him. Very very pleased with the difference, would highly recommend! Thank you&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">DE21 · April 2026</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Excellent</h3>
+        <p class="rv-text">&ldquo;Very pleased with the result. 2 sofas cleaned. Turned up on time very pleasant guy to have in your home, friendly polite and efficient. Gave a very reasonable price so would not hesitate to recommend him to others and use him again myself when needed&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">DE22 · April 2026</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Clean sofa</h3>
+        <p class="rv-text">&ldquo;Sofa cleaning has made such a difference&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Julia C</span><span class="rv-sub">DE23 · April 2026</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Excellent Results</h3>
+        <p class="rv-text">&ldquo;Superb, professional cleaning, friendly and respectful. Highly recommend this company and will definitely use them again.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">DE55 · April 2026</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Would recommend</h3>
+        <p class="rv-text">&ldquo;Excellent service. Pretty instant response with a quote. Good communication thereafter and a great end job! Very happy. Thanks&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Customer</span><span class="rv-sub">DE65 · April 2026</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:90.0%" role="img" aria-label="Rated 9 out of 10"></span><span class="rv-score">9/10</span></div>
+        <h3 class="rv-title">Brilliant service</h3>
+        <p class="rv-text">&ldquo;Called them and when I explained what I needed they were able to come out the following day. Extremely happy with the service, would definitely use again for any carpets that required cleaning.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Julie L</span><span class="rv-sub">DE21 · November 2025</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">very pleased with the outcome the person was very helpful when I asked questions</h3>
+        <p class="rv-text">&ldquo;I would recommend the company i used to all my friends nothing was too much trouble friendly and would use them again&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">DE22 · August 2025</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Excellent service</h3>
+        <p class="rv-text">&ldquo;Jamie did our bedroom, landing &amp; stairs carpets today &amp; 2 rugs. Excellent service &amp; very friendly. Will use again for all future cleaning. Thank you Jamie for such a superb quality clean.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">DE21 · August 2025</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:93.3%" role="img" aria-label="Rated 9.33 out of 10"></span><span class="rv-score">9.33/10</span></div>
+        <h3 class="rv-title">First class</h3>
+        <p class="rv-text">&ldquo;First class service, turned up on time and did a fantastic job. A really nice chap also!!&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Mark K</span><span class="rv-sub">DE22 · July 2025</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Carpet Clean - does what it says on the tin</h3>
+        <p class="rv-text">&ldquo;The young man who is Carpet Clean, was amazing, he arrived on time, he checked the two rooms where the carpets were situated, helped to move stuff, proceeded to clean the carpets. Very quick, very efficient and both carpets look like new. He was such a nice, pleasant young man and we would highly recommend him to anyone. Very happy&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">NG17 · July 2025</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Cleaning a sofa</h3>
+        <p class="rv-text">&ldquo;Really happy with the outcome, got pen marks, mud marks and water marks off the sofa and it looks great.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Customer</span><span class="rv-sub">DE22 · July 2025</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">HIGHLY RECOMMEND!!</h3>
+        <p class="rv-text">&ldquo;What a great service. Jamie communicated superbly He was on time Carried out the carpet clean to the highest of standards. Made no mess My stair carpet looks amazing&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">DE22 · May 2025</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">3 seater sofa with tobacco smoke smell</h3>
+        <p class="rv-text">&ldquo;Jamie answered my request within a few minutes of me posting it. He was aware that we needed the job done as soon as possible and offered us a slot the very next morning. The price was competitive. He offered two ways of paying which meant we could be flexible. He arrived a few minutes early and introduced himself. He was friendly, polite and nothing was too much trouble. He did the job thoroughly and was quicker than he had anticipated. His work was clean, tidy and well organised. The sofa now looks and smells great. Thanks Jamie. Very highly recommended.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Sue J</span><span class="rv-sub">DE11 · May 2025</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Lounge Carpet, Stairs &amp; Sofa</h3>
+        <p class="rv-text">&ldquo;Good comms when booking in and arrived on time. Jamie did a great job on our carpets and sofa - they look like new now! Would use him again and definitely recommend.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">DE24 · April 2025</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Cleaned all the bedroom and landing carpets. Amazing job!</h3>
+        <p class="rv-text">&ldquo;Always great working with Jamie. Someone who cares and does what he says. Thanks so much. My carpets are great now! Thank you.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Customer</span><span class="rv-sub">DE23 · March 2025</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Cleaned an old sofa</h3>
+        <p class="rv-text">&ldquo;It was a great experience, he showed up on time, did the work quickly, didn't make a mess and the sofa looks very good.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">DE56 · March 2025</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Large areas to carpet clean</h3>
+        <p class="rv-text">&ldquo;There was some large areas to Carpet Clean the communication prior to the job being carried out was excellent. The standard of the carpet cleaning was amazing. There was some badly stained areas which you could not tell after the carpets smelt and looked wonderful. I will definitely use this company again very friendly professional at all times and extremely reliable willing to work around the customer faultless in every way. Highly recommended independently run business.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Customer</span><span class="rv-sub">DE3 · March 2025</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Cat urine couch clean</h3>
+        <p class="rv-text">&ldquo;Was fantastic he arrived on time, best priced by far. Was very chatty and great with our animals would highly recommend.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">NG16 · January 2025</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Carpet clean</h3>
+        <p class="rv-text">&ldquo;Perfect job at a good price, will definitely use again&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">DE5 · November 2024</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Cleaning sofas</h3>
+        <p class="rv-text">&ldquo;Brilliant service. Excellent communication. Did great job.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">DE21 · August 2024</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Carpet and upholstery clean</h3>
+        <p class="rv-text">&ldquo;He worked very hard removing blood stains and cleaned the upholstery and remaining carpets very well. He was helpful and polite and I would recommend him to everyone. Very pleased with the work he did.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">KT21 · July 2024</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Carpet cleaning</h3>
+        <p class="rv-text">&ldquo;Very pleasant and sociable gentleman. Tidy up following. Very pleased with the outcome.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Customer</span><span class="rv-sub">CM23 · May 2024</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Carpet shampoo</h3>
+        <p class="rv-text">&ldquo;Good job. Efficient, courteous and helpful&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">DE23 · May 2024</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Lounge carpet cleaned</h3>
+        <p class="rv-text">&ldquo;Jamie was super fast at responding in all correspondence, he was quick to be able to fit my job in, very courteous and on time, he will be my regular carpet and upholstery cleaner from now on.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">DE75 · April 2024</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100.0%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        <h3 class="rv-title">Front room/ play room carpet</h3>
+        <p class="rv-text">&ldquo;Hired “Rug Doctor “ from my local Tescos and it didn’t touch any of the stains so posted a job on here . Impressive response and attendance. Very prompt service (early to agreed time ,) carpet looked amazing !! We had an elderly dog and the carpet had been stained . We also have two children who have fun with felt tips . Honestly soo pleased for the result , thank you&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Verified customer</span><span class="rv-sub">DE55 · April 2024</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        
+        <p class="rv-text">&ldquo;Brilliant service, carpets are like new. I was so shocked how well they came up. Will definitely use these again.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Matt B</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        
+        <p class="rv-text">&ldquo;Used Carpet Clean this morning. Very professional and left the downstairs carpets very clean and surprisingly dry. Furniture put back in place — will definitely have me as a repeat customer.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Bill B</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        
+        <p class="rv-text">&ldquo;Had ours done today. Living room and stairs carpets. Both now look brand new. Excellent service.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Sharpey</span></div>
+      </article>
+      <article class="review-card">
+        <div class="rv-top"><span class="stars" style="--p:100%" role="img" aria-label="Rated 10 out of 10"></span><span class="rv-score">10/10</span></div>
+        
+        <p class="rv-text">&ldquo;Great service and very professional! Definitely recommend and will be booking in the future.&rdquo;</p>
+        <button class="rv-more" type="button" aria-expanded="false" hidden>Read more</button>
+        <div class="rv-meta"><span class="rv-name">Liam M</span></div>
+      </article>
     </div>
   </div>
 </section>
@@ -452,6 +648,52 @@
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
   els.forEach(function (el) { io.observe(el); });
+})();
+</script>
+<script>
+(function () {
+  var sc = document.getElementById('rvScroller');
+  if (!sc) return;
+  var prev = document.getElementById('rvPrev'), next = document.getElementById('rvNext');
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function edges() {
+    prev.disabled = sc.scrollLeft <= 2;
+    next.disabled = sc.scrollLeft + sc.clientWidth >= sc.scrollWidth - 2;
+  }
+  function go(dir) {
+    sc.scrollBy({ left: dir * sc.clientWidth * 0.85, behavior: reduce ? 'auto' : 'smooth' });
+  }
+  prev.addEventListener('click', function () { go(-1); });
+  next.addEventListener('click', function () { go(1); });
+  var ticking = false;
+  sc.addEventListener('scroll', function () {
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function () { edges(); ticking = false; });
+  });
+
+  var cards = sc.querySelectorAll('.review-card');
+  function measure() {
+    cards.forEach(function (card) {
+      var t = card.querySelector('.rv-text'), b = card.querySelector('.rv-more');
+      if (!t || !b || card.classList.contains('open')) return;
+      b.hidden = !(t.scrollHeight > t.clientHeight + 1);
+    });
+    edges();
+  }
+  cards.forEach(function (card) {
+    var b = card.querySelector('.rv-more');
+    if (!b) return;
+    b.addEventListener('click', function () {
+      var open = card.classList.toggle('open');
+      b.textContent = open ? 'Show less' : 'Read more';
+      b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+  var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(measure, 150); });
+  window.addEventListener('load', measure);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+  measure();
 })();
 </script>
 </body>
